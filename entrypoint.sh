@@ -14,7 +14,6 @@ SRC_PATH="$INPUT_SRC_PATH"
 DST_PATH="$INPUT_DST_PATH"
 DST_OWNER="$INPUT_DST_OWNER"
 DST_REPO_NAME="$INPUT_DST_REPO_NAME"
-SRC_BRANCH="$INPUT_SRC_BRANCH"
 DST_BRANCH="$INPUT_DST_BRANCH"
 CLEAN="$INPUT_CLEAN"
 FILE_FILTER="$INPUT_FILE_FILTER"
@@ -63,7 +62,6 @@ DST_PATH="${DST_PATH:-${SRC_PATH}}"
 USERNAME="${USERNAME:-${GITHUB_ACTOR}}"
 EMAIL="${EMAIL:-${GITHUB_ACTOR}@users.noreply.github.com}"
 
-SRC_BRANCH="${SRC_BRANCH:-master}"
 DST_BRANCH="${DST_BRANCH:-master}"
 
 SRC_REPO="${GITHUB_REPOSITORY}${SRC_WIKI}"
@@ -72,32 +70,32 @@ DST_REPO="${DST_OWNER}/${DST_REPO_NAME}${DST_WIKI}"
 DST_REPO_NAME="${DST_REPO_NAME}${DST_WIKI}"
 
 DST_REPO_DIR=dst_repo_dir
-FINAL_SOURCE="${SRC_REPO_NAME}/${SRC_PATH}"
+FINAL_SOURCE="${BASE_PATH}/${SRC_PATH}"
 
 git config --global user.name "${USERNAME}"
 git config --global user.email "${EMAIL}"
 
 if [[ -z "$FILE_FILTER" ]]; then
-    echo "Copying \"${SRC_REPO_NAME}/${SRC_PATH}\" and pushing it to ${DST_OWNER}/${DST_REPO_NAME}"
+    echo "Copying \"${BASE_PATH}/${SRC_PATH}\" and pushing it to ${DST_OWNER}/${DST_REPO_NAME}"
 else
-    echo "Copying files matching \"${FILE_FILTER}\" from \"${SRC_REPO_NAME}/${SRC_PATH}\" and pushing it to ${DST_OWNER}/${DST_REPO_NAME}"
+    echo "Copying files matching \"${FILE_FILTER}\" from \"${BASE_PATH}/${SRC_PATH}\" and pushing it to ${DST_OWNER}/${DST_REPO_NAME}"
 fi
 
-git clone --branch ${SRC_BRANCH} --single-branch --depth 1 https://${PERSONAL_TOKEN}@github.com/${SRC_REPO}.git
 if [ "$?" -ne 0 ]; then
     echo >&2 "Cloning '$SRC_REPO' failed"
     exit 1
 fi
-rm -rf ${SRC_REPO_NAME}/.git
+
+rm -rf ${BASE_PATH}/.git
 
 if [[ -n "$FILE_FILTER" ]]; then
-    find ${SRC_REPO_NAME}/ -type f -not -name "${FILE_FILTER}" -exec rm {} \;
+    find ${BASE_PATH}/ -type f -not -name "${FILE_FILTER}" -exec rm {} \;
 fi
 
 if [[ -n "$FILTER" ]]; then
     tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
     mkdir ${temp_dir}/${SRC_REPO_NAME}
-    cd ${SRC_REPO_NAME}
+    cd ${BASE_PATH}
     FINAL_SOURCE="${tmp_dir}/${SRC_REPO_NAME}/${SRC_PATH}"
     SAVEIFS=$IFS
     IFS=$(echo -en "\n\b")
@@ -116,6 +114,7 @@ fi
 
 
 git clone --branch ${DST_BRANCH} --single-branch --depth 1 https://${PERSONAL_TOKEN}@github.com/${DST_REPO}.git ${DST_REPO_DIR}
+
 if [ "$?" -ne 0 ]; then
     echo >&2 "Cloning branch '$DST_BRANCH' in '$DST_REPO' failed"
     echo >&2 "Falling back to default branch"

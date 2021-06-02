@@ -1,6 +1,6 @@
-name: 'Copycat Action'
-description: 'GitHub Action for copying files to other repositories'
-author: 'André Storhaug'
+name: 'Copycat Action But Better'
+description: 'GitHub Action for copying files from the runner file system to other repositories'
+author: 'André Storhaug / Jack Shedd'
 branding:
   icon: 'copy'
   color: 'red'
@@ -20,10 +20,6 @@ inputs:
   dst_repo_name:
     description: 'The name of the repository to push to'
     required: true
-  src_branch:
-    description: 'The branch name of the source repository'
-    required: false
-    default: 'master'
   dst_branch:
     description: 'The branch name of the destination repository'
     required: false
@@ -41,14 +37,6 @@ inputs:
   exclude:
     description: 'A glob pattern for excluding paths'
     required: false
-  src_wiki:
-    description: 'Set to true if the source repository you want to copy from is the GitHub Wiki'
-    default: false
-    required: false
-  dst_wiki:
-    description: 'Set to true if the destination repository you want to copy from is the GitHub Wiki'
-    required: false
-    default: false
   commit_message:
     description: 'A custom git commit message.'
     required: false
@@ -67,7 +55,6 @@ runs:
     - ${{ inputs.dst_path }}
     - ${{ inputs.dst_owner }}
     - ${{ inputs.dst_repo_name }}
-    - ${{ inputs.src_branch }}
     - ${{ inputs.dst_branch }}
     - ${{ inputs.clean }}
     - ${{ inputs.file_filter }}
