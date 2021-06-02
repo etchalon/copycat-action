@@ -1,4 +1,4 @@
-name: 'Copycat Action But Better'
+name: 'Copy Working Directory to Another Repo'
 description: 'GitHub Action for copying files from the runner file system to other repositories'
 author: 'André Storhaug / Jack Shedd'
 branding:

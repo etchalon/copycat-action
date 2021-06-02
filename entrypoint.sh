@@ -140,11 +140,12 @@ if [ "$CLEAN" = "true" ]; then
 fi
 
 mkdir -p "${DST_REPO_DIR}/${DST_PATH%/*}" || exit "$?"
+echo "Copying \"${FINAL_SOURCE}\" to \"${DST_REPO_DIR}/${DST_PATH}\""
 cp -rf "${FINAL_SOURCE}" "${DST_REPO_DIR}/${DST_PATH}" || exit "$?"
 cd "${DST_REPO_DIR}" || exit "$?"
 
 if [[ -z "${COMMIT_MESSAGE}" ]]; then
-    if [ -f "${BASE_PATH}/${FINAL_SOURCE}" ]; then
+    if [ -f "${FINAL_SOURCE}" ]; then
         COMMIT_MESSAGE="Update file in \"${SRC_PATH}\" from \"${GITHUB_REPOSITORY}\""
     else
         COMMIT_MESSAGE="Update file(s) \"${SRC_PATH}\" from \"${GITHUB_REPOSITORY}\""
